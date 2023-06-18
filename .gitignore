@@ -1,3 +1,4 @@
+.DS_Store
 # Any databases
 *.db
 # These include an API token, ynab_ids of ignored budgets, and the absolute local path to /ynab-automator/ynab_automator/db
