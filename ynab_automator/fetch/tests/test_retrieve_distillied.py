@@ -1,0 +1,84 @@
+from __future__ import annotations
+
+import pytest
+
+from ynab_automator.fetch import retrieve_distilled
+
+
+def test_budgets():
+    foo = retrieve_distilled.budgets()
+    assert isinstance(foo, list)
+    assert len(foo) == 5
+
+
+cases = [
+    "c1e0ea99-5668-483b-b01e-25b348fe3437",  # Common budget
+    "f8017349-fb67-4db6-b02c-bf212e6bb438",  # MV EUR
+    "b236bcc3-2a34-46a0-8c63-67b11d4201e1",  # MV CZK
+]
+
+
+@pytest.mark.parametrize("budget_ynab_id", cases)
+def test_categories(budget_ynab_id):
+    foo = retrieve_distilled.categories(budget_ynab_id)
+    assert isinstance(foo, list)
+    active_category_names = [x["name"] for x in foo if not x["deleted"]]
+    print(f"Categories: {len(active_category_names)}")
+    print(f"Category names: {active_category_names}")
+
+
+cases = [
+    ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2023-05-01"),
+    ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2023-06-01"),
+    ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2023-02-01"),
+    ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2022-12-01"),
+    ("f8017349-fb67-4db6-b02c-bf212e6bb438", "2023-05-01"),
+    ("f8017349-fb67-4db6-b02c-bf212e6bb438", "2023-03-01"),
+    ("f8017349-fb67-4db6-b02c-bf212e6bb438", "2023-01-01"),
+    ("b236bcc3-2a34-46a0-8c63-67b11d4201e1", "2023-05-01"),
+    ("b236bcc3-2a34-46a0-8c63-67b11d4201e1", "2023-04-01"),
+    ("b236bcc3-2a34-46a0-8c63-67b11d4201e1", "2023-02-01"),
+]
+
+
+@pytest.mark.parametrize("budget_ynab_id, month", cases)
+def test_month(budget_ynab_id, month):
+    foo = retrieve_distilled.month(budget_ynab_id, month)
+    assert isinstance(foo, dict)
+    assert len(foo) == 9
+
+
+@pytest.mark.parametrize("budget_ynab_id, month", cases)
+def test_month_categories(budget_ynab_id, month):
+    foo = retrieve_distilled.month_categories(budget_ynab_id, month)
+    assert isinstance(foo, list)
+    active_category_names = [x["name"] for x in foo if not x["deleted"]]
+    print(f"Categories (in month): {len(active_category_names)}")
+    print(f"Category names (in month): {active_category_names}")
+
+
+cases = [
+    "567fd3f3-0d59-43c8-9edb-c5371896d8d0",
+    "7d3c38fa-1bd3-4471-9d39-d0342cac0d42",
+    "1be05b77-b871-43f9-a756-8afea9ccdce2",
+    "76ad6fcf-9ae8-4282-b6a2-ceaeb5534fee",
+    "c33c49b3-e6f9-4192-88e7-4da7368aff4d",
+    "465ad8ab-f4b2-4190-8636-ab25d420aca6",
+    "59923e4e-dc0d-4003-9ff9-aa4b6b5a506b",
+    "33b5155c-7744-46c3-a0e6-1c85970ddc29",
+    "1393d143-deb1-4afe-a745-624851d8a7bd",
+    "3c6c19f7-9e95-44e0-8468-9a099395e1b8",
+]
+
+
+cases = [
+    ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2023-05-01", category_ynab_id)
+    for category_ynab_id in cases
+]
+
+
+@pytest.mark.parametrize("budget_ynab_id, month, category_ynab_id", cases)
+def test_month_category(budget_ynab_id, month, category_ynab_id):
+    foo = retrieve_distilled.month_category(budget_ynab_id, month, category_ynab_id)
+    assert isinstance(foo, dict)
+    assert len(foo) == 23
