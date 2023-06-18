@@ -53,23 +53,29 @@ class DbConnection:
         self.cur.execute(SQL)
         self.conn.commit()
 
-    def save_budgets(self, json_object: dict) -> None:
-        for item in json_object["data"]["budgets"]:
+    def save_budgets(self, budgets: list[dict]) -> None:
+        for item in budgets:
             ynab_id = item["id"]
             if ynab_id in ignored.BUDGETS:
                 continue
             name = item["name"]
-            sql = "INSERT OR REPLACE INTO Budget (ynab_id, name) VALUES (?, ?)"
+            sql = """\
+                INSERT INTO Budget (ynab_id, name) VALUES (?, ?)
+                    ON CONFLICT (ynab_id) DO UPDATE SET name = excluded.name
+                """
             self.cur.execute(sql, (ynab_id, name))
             self.conn.commit()
 
     def save_categories(self, json_object: dict, budget_id: int) -> None:
-        for group in json_object["data"]["category_groups"]:
+        for group in json_object:
             for category in group["categories"]:
                 if category["deleted"]:
                     continue
                 ynab_id = category["id"]
                 name = category["name"]
-                sql = "INSERT OR REPLACE INTO Category (ynab_id, name, budget_id) VALUES (?, ?, ?)"
+                sql = """\
+                    INSERT INTO Category (ynab_id, name, budget_id) VALUES (?, ?, ?)
+                        ON CONFLICT (ynab_id) DO UPDATE SET name = excluded.name
+                    """
                 self.cur.execute(sql, (ynab_id, name, budget_id))
                 self.conn.commit()
