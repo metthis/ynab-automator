@@ -1,7 +1,5 @@
 from __future__ import annotations
-from collections.abc import Iterable
 import sqlite3
-import textwrap
 
 from ynab_automator.config import ignored
 from ynab_automator.db import path
