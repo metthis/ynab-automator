@@ -59,8 +59,6 @@ cases = [
     [(1, "ynab_id_1", "name_1"), (1, "ynab_id_2", "name_2")],
     # ynab_id not UNIQUE:
     [(1, "ynab_id_1", "name_1"), (2, "ynab_id_1", "name_2")],
-    # name not UNIQUE:
-    [(1, "ynab_id_1", "name_1"), (2, "ynab_id_2", "name_1")],
 ]
 
 

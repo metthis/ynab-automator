@@ -22,7 +22,7 @@ class DbConnection:
             CREATE TABLE IF NOT EXISTS Budget (
                 id      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 ynab_id TEXT    NOT NULL UNIQUE,
-                name    TEXT    NOT NULL UNIQUE
+                name    TEXT    NOT NULL
             )
             """
         self.cur.execute(SQL)
@@ -33,7 +33,7 @@ class DbConnection:
             CREATE TABLE IF NOT EXISTS Category (
                 id          INTEGER         NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 ynab_id     TEXT            NOT NULL,
-                name        TEXT            NOT NULL UNIQUE,
+                name        TEXT            NOT NULL,
                 position    INTEGER,
                 drain_into  INTEGER,
                 overflow    INTEGER,

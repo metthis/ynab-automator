@@ -47,7 +47,7 @@ EXPECTED_BUDGET_TABLE_SCHEMA = """\
                                 CREATE TABLE IF NOT EXISTS Budget (
                                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                                     ynab_id TEXT NOT NULL UNIQUE,
-                                    name TEXT NOT NULL UNIQUE
+                                    name TEXT NOT NULL
                                 )
                                 """
 
@@ -56,7 +56,7 @@ EXPECTED_CATEGORY_TABLE_SCHEMA = """\
                                     CREATE TABLE IF NOT EXISTS Category (
                                         id          INTEGER         NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                                         ynab_id     TEXT            NOT NULL,
-                                        name        TEXT            NOT NULL UNIQUE,
+                                        name        TEXT            NOT NULL,
                                         position    INTEGER,
                                         drain_into  INTEGER,
                                         overflow    INTEGER,
