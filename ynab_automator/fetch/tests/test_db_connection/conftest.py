@@ -33,7 +33,7 @@ def db_category_table(db: DbConnection, db_budget_table):
 @pytest.fixture
 def insert_10_budget_rows(db: DbConnection):
     sql = "INSERT INTO Budget (ynab_id, name) VALUES (?, ?)"
-    values = [(f"ynab_id_{i}", f"name_{i}") for i in range(10)]
+    values = [(f"ynab_id_{i}", f"name_{i}") for i in range(1, 11)]
     db.cur.executemany(sql, values)
     db.conn.commit()
     yield
@@ -42,7 +42,7 @@ def insert_10_budget_rows(db: DbConnection):
 @pytest.fixture
 def insert_10_category_rows(db: DbConnection):
     sql = "INSERT INTO Category (ynab_id, name, budget_id) VALUES (?, ?, ?)"
-    values = [(f"ynab_id_{i}", f"name_{i}", 4) for i in range(10)]
+    values = [(f"ynab_id_{i}", f"name_{i}", 4) for i in range(1, 11)]
     db.cur.executemany(sql, values)
     db.conn.commit()
     yield
