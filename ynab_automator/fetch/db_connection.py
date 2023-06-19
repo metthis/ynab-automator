@@ -20,7 +20,7 @@ class DbConnection:
     def create_budget_table(self) -> None:
         SQL = """\
             CREATE TABLE IF NOT EXISTS Budget (
-                id      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                id      INTEGER NOT NULL PRIMARY KEY UNIQUE,
                 ynab_id TEXT    NOT NULL UNIQUE,
                 name    TEXT    NOT NULL
             )
@@ -31,7 +31,7 @@ class DbConnection:
     def create_category_table(self) -> None:
         SQL = """\
             CREATE TABLE IF NOT EXISTS Category (
-                id          INTEGER         NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                id          INTEGER         NOT NULL PRIMARY KEY UNIQUE,
                 ynab_id     TEXT            NOT NULL,
                 name        TEXT            NOT NULL,
                 position    INTEGER,

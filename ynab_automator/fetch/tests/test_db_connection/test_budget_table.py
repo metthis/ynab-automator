@@ -26,7 +26,7 @@ def test_budget_columns_are_TEXT(db: DbConnection, db_budget_table):
     # No exception should be raised
 
 
-def test_budget_id_is_AUTOINCREMENT(db: DbConnection, db_budget_table):
+def test_budget_id_is_ROWID(db: DbConnection, db_budget_table):
     db.cur.executemany(
         "INSERT INTO Budget (ynab_id, name) VALUES (?, ?)",
         [("id_one", "one"), ("id_two", "two"), ("id_three", "three")],

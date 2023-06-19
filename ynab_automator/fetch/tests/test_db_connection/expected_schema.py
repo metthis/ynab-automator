@@ -45,7 +45,7 @@ def resulted_table_schema(db: DbConnection, table_name: str) -> str:
 
 EXPECTED_BUDGET_TABLE_SCHEMA = """\
                                 CREATE TABLE IF NOT EXISTS Budget (
-                                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                                    id INTEGER NOT NULL PRIMARY KEY UNIQUE,
                                     ynab_id TEXT NOT NULL UNIQUE,
                                     name TEXT NOT NULL
                                 )
@@ -54,7 +54,7 @@ EXPECTED_BUDGET_TABLE_SCHEMA = """\
 
 EXPECTED_CATEGORY_TABLE_SCHEMA = """\
                                     CREATE TABLE IF NOT EXISTS Category (
-                                        id          INTEGER         NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                                        id          INTEGER         NOT NULL PRIMARY KEY UNIQUE,
                                         ynab_id     TEXT            NOT NULL,
                                         name        TEXT            NOT NULL,
                                         position    INTEGER,

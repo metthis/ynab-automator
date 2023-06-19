@@ -6,7 +6,7 @@ import pytest
 from ynab_automator.fetch.db_connection import DbConnection
 
 
-def test_category_id_is_AUTOINCREMENT(
+def test_category_id_is_ROWID(
     db: DbConnection, db_category_table, insert_10_budget_rows
 ):
     sql = "INSERT INTO Category (ynab_id, name, budget_id) VALUES (?, ?, ?)"
