@@ -75,7 +75,7 @@ class DbConnection:
                 name = category["name"]
                 sql = """\
                     INSERT INTO Category (ynab_id, name, budget_id) VALUES (?, ?, ?)
-                        ON CONFLICT (ynab_id) DO UPDATE SET name = excluded.name
+                        ON CONFLICT (budget_id, ynab_id) DO UPDATE SET name = excluded.name
                     """
                 self.cur.execute(sql, (ynab_id, name, budget_id))
                 self.conn.commit()
