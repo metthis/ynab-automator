@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pytest
 
-from ynab_automator.config import ignored
 from ynab_automator.fetch.db_connection import DbConnection
 
 
