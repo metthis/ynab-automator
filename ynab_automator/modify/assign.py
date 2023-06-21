@@ -121,7 +121,6 @@ def new_month_savings_balance_TB(m_category: MonthCategory) -> Tuple[MonthCatego
     return (m_category,)
 
 
-@staticmethod
 def extract_TB_limit(note: str) -> int | float:
     PATTERN = "^limit: *((?:[0-9]+[ _]*)+)"
     note = note.lower()
