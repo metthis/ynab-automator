@@ -43,7 +43,6 @@ cases = [(x, x) for x in cases]
 
 @pytest.mark.parametrize("m_category, data", cases, indirect=["m_category"])
 def test_new_month_NEED_without_overflow(m_category: MonthCategory, data: dict):
-    print(data)
     result = assign.new_month_NEED_without_overflow(m_category)
     assert isinstance(result, tuple)
     assert len(result) == 1
