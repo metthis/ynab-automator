@@ -4,24 +4,7 @@ from random import randint
 import pytest
 
 from ynab_automator.datastructures.ynab_dataclasses import MonthCategory
-from ynab_automator.fetch.months import get_current_month
 from ynab_automator.modify import assign
-
-
-@pytest.fixture
-def m_category(request) -> MonthCategory:
-    data = {
-        "id": "ynab_id",
-        "name": "name",
-        "budgeted": request.param["old_budgeted"],
-        "goal_under_funded": request.param["goal_under_funded"],
-    }
-
-    yield MonthCategory(
-        data=data,
-        budget_ynab_id="budget_ynab_id",
-        month=get_current_month(),
-    )
 
 
 # cases is a list made up of tuples, with each tuple made up of 2 identical dictionaries.
@@ -33,8 +16,8 @@ def m_category(request) -> MonthCategory:
 
 cases = (
     {
-        "old_budgeted": randint(0, 499),
-        "goal_under_funded": randint(0, 499),
+        "budgeted": randint(0, 499) * 1000,
+        "goal_under_funded": randint(0, 499) * 1000,
     }
     for _ in range(5)
 )
@@ -50,6 +33,5 @@ def test_new_month_NEED_without_overflow(m_category: MonthCategory, data: dict):
     resulted_m_category = result[0]
     assert isinstance(resulted_m_category, MonthCategory)
     assert (
-        resulted_m_category.new_budgeted
-        == data["old_budgeted"] + data["goal_under_funded"]
+        resulted_m_category.new_budgeted == data["budgeted"] + data["goal_under_funded"]
     )
