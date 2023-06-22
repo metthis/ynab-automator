@@ -8,7 +8,7 @@ from ynab_automator.fetch.months import get_current_month
 
 @pytest.fixture
 def m_category(request) -> MonthCategory:
-    defaults = {
+    DEFAULTS = {
         "id": "ynab_id",
         "name": "name",
         "goal_type": "",
@@ -19,7 +19,7 @@ def m_category(request) -> MonthCategory:
         "note": "",
     }
 
-    data = {key: request.param.get(key, value) for (key, value) in defaults.items()}
+    data = {key: request.param.get(key, value) for (key, value) in DEFAULTS.items()}
 
     yield MonthCategory(
         data=data,
