@@ -130,7 +130,8 @@ def extract_TB_limit(note: str) -> int | float:
         return float("inf")
 
     number_str: str = re_match[1]
-    number_str: str = number_str.replace(" ", "")
+    number_str: str = re.sub(" +", "", number_str)
+    number_str: str = re.sub("_+", "_", number_str)
     number_int: int = int(number_str) * 1000
 
     return number_int
