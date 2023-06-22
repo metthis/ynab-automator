@@ -13,6 +13,7 @@ from ynab_automator.modify import assign
 # and as a variable to the test itself (called: data).
 # This approach will be used in other tests as well.
 
+
 cases = (
     {
         "budgeted": randint(0, 499),
