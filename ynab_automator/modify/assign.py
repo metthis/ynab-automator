@@ -111,12 +111,8 @@ def new_month_savings_builder_MF(m_category: MonthCategory) -> Tuple[MonthCatego
 
 
 def new_month_savings_balance_TB(m_category: MonthCategory) -> Tuple[MonthCategory]:
-    to_add = m_category.data["goal_overall_left"]
     limit = extract_TB_limit(m_category.data["note"])
-
-    if limit < to_add:
-        to_add = limit
-
+    to_add = min(m_category.data["goal_overall_left"], limit)
     m_category.new_budgeted = m_category.old_budgeted + to_add
     return (m_category,)
 
