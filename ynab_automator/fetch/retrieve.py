@@ -33,7 +33,7 @@ def check_json_for_errors(json: dict) -> None:
                     Retrieved: {repr(json)}
                     """
         err_string = textwrap.dedent(err_string)
-        raise ValueError(err_string)
+        raise TypeError(err_string)
     if "error" in json:
         err_string = f"""\
                     Retrieved json communicates an error.
