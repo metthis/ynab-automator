@@ -19,7 +19,8 @@ def m_category(request) -> MonthCategory:
         "note": "",
     }
 
-    data = {key: request.param.get(key, value) for (key, value) in DEFAULTS.items()}
+    # data = {key: request.param.get(key, value) for (key, value) in DEFAULTS.items()}
+    data = DEFAULTS | request.param
 
     yield MonthCategory(
         data=data,
