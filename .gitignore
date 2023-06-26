@@ -4,7 +4,8 @@
 # These include an API token, ynab_ids of ignored budgets, and the absolute local path to /ynab-automator/ynab_automator/db
 /ynab_automator/config/**
 !/ynab_automator/config/__init__.py
-
+# Directory for helper scripts used during development
+/ynab_automator/temp_scripts/
 
 # Everything below is from the Python.gitignore temaplate
 # https://github.com/github/gitignore/blob/main/Python.gitignore
