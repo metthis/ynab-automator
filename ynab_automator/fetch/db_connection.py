@@ -54,11 +54,11 @@ class DbConnection:
         self.conn.commit()
 
     def save_budgets(self, budgets: list[dict]) -> None:
-        for item in budgets:
-            ynab_id = item["id"]
+        for budget in budgets:
+            ynab_id = budget["id"]
             if ynab_id in ignored.BUDGETS:
                 continue
-            name = item["name"]
+            name = budget["name"]
             sql = """\
                 INSERT INTO Budget (ynab_id, name) VALUES (?, ?)
                     ON CONFLICT (ynab_id) DO UPDATE SET name = excluded.name
@@ -66,16 +66,15 @@ class DbConnection:
             self.cur.execute(sql, (ynab_id, name))
             self.conn.commit()
 
-    def save_categories(self, json_object: dict, budget_id: int) -> None:
-        for group in json_object:
-            for category in group["categories"]:
-                if category["deleted"]:
-                    continue
-                ynab_id = category["id"]
-                name = category["name"]
-                sql = """\
-                    INSERT INTO Category (ynab_id, name, budget_id) VALUES (?, ?, ?)
-                        ON CONFLICT (budget_id, ynab_id) DO UPDATE SET name = excluded.name
-                    """
-                self.cur.execute(sql, (ynab_id, name, budget_id))
-                self.conn.commit()
+    def save_categories(self, categories: list[dict], budget_id: int) -> None:
+        for category in categories:
+            if category["deleted"]:
+                continue
+            ynab_id = category["id"]
+            name = category["name"]
+            sql = """\
+                INSERT INTO Category (ynab_id, name, budget_id) VALUES (?, ?, ?)
+                    ON CONFLICT (budget_id, ynab_id) DO UPDATE SET name = excluded.name
+                """
+            self.cur.execute(sql, (ynab_id, name, budget_id))
+            self.conn.commit()
