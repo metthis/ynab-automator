@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import List, Tuple
 import re
 from ynab_automator.fetch import months
 
@@ -9,8 +8,8 @@ from ynab_automator.modify import prepare
 
 
 def get_updated_m_categories(
-    m_categories: List[MonthCategory], categories_config: List[Category]
-) -> List[MonthCategory]:
+    m_categories: list[MonthCategory], categories_config: list[Category]
+) -> list[MonthCategory]:
     all_updated_m_categories = []
 
     for m_category in m_categories:
@@ -27,7 +26,7 @@ def get_updated_m_categories(
 
 def m_category_dispatcher(
     m_category: MonthCategory, category_config: Category
-) -> Tuple[MonthCategory]:
+) -> tuple[MonthCategory]:
     goal_type = m_category.data["goal_type"]
     if goal_type == "NEED":
         if category_config.overflow:
@@ -44,18 +43,18 @@ def m_category_dispatcher(
 
 def new_month_NEED_without_overflow(
     m_category: MonthCategory,
-) -> Tuple[MonthCategory]:
+) -> tuple[MonthCategory]:
     to_add = m_category.data["goal_under_funded"]
     m_category.new_budgeted = m_category.old_budgeted + to_add
     return (m_category,)
 
 
-def new_month_NEED_with_overflow(m_category: MonthCategory) -> List[MonthCategory]:
+def new_month_NEED_with_overflow(m_category: MonthCategory) -> list[MonthCategory]:
     left_to_add = m_category.data["goal_target"]
     return overflow_loop(m_category, left_to_add)
 
 
-def overflow_loop(m_category: MonthCategory, left_to_add: int) -> List[MonthCategory]:
+def overflow_loop(m_category: MonthCategory, left_to_add: int) -> list[MonthCategory]:
     updated_m_categories = []
     overflow_cycle = 0
     while left_to_add > 0:
@@ -70,7 +69,7 @@ def overflow_loop(m_category: MonthCategory, left_to_add: int) -> List[MonthCate
 
 def overflow_cycle(
     m_category: MonthCategory, overflow_cycle: int, left_to_add: int
-) -> Tuple[int, MonthCategory]:
+) -> tuple[int, MonthCategory]:
     budget_ynab_id = m_category.budget_ynab_id
     category_ynab_id = m_category.category_ynab_id
     month = months.offset_month(m_category.month, overflow_cycle)
@@ -104,13 +103,13 @@ def overflow_cycle(
     return left_to_add, m_category
 
 
-def new_month_savings_builder_MF(m_category: MonthCategory) -> Tuple[MonthCategory]:
+def new_month_savings_builder_MF(m_category: MonthCategory) -> tuple[MonthCategory]:
     to_add = m_category.data["goal_overall_left"]
     m_category.new_budgeted = m_category.old_budgeted + to_add
     return (m_category,)
 
 
-def new_month_savings_balance_TB(m_category: MonthCategory) -> Tuple[MonthCategory]:
+def new_month_savings_balance_TB(m_category: MonthCategory) -> tuple[MonthCategory]:
     limit = extract_TB_limit(m_category.data["note"])
     to_add = min(m_category.data["goal_overall_left"], limit)
     m_category.new_budgeted = m_category.old_budgeted + to_add
