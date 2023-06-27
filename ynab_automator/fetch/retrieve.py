@@ -64,7 +64,7 @@ def month_category(budget_ynab_id: str, month: str, category_ynab_id: str) -> di
 
 
 def push_month_category(
-    budget_ynab_id: str, month: str, category_ynab_id: str, data: dict
+    budget_ynab_id: str, month: str, category_ynab_id: str, data: str
 ) -> dict:
     path = _PATH_MONTH_CATEGORY.format(budget_ynab_id, month, category_ynab_id)
     return _retrieve_or_push_json(path, data)
