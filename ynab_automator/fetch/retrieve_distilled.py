@@ -15,6 +15,18 @@ def categories(budget_ynab_id: str) -> List[dict]:
     return distill.categories(json)
 
 
+def categories_from_group(
+    budget_ynab_id: str,
+    *,
+    group_ynab_id: str | None = None,
+    group_name: str | None = None,
+) -> list[dict]:
+    json = retrieve.categories(budget_ynab_id)
+    return distill.categories_from_group(
+        json, group_ynab_id=group_ynab_id, group_name=group_name
+    )
+
+
 def month(budget_ynab_id: str, month: str) -> dict:
     json = retrieve.month(budget_ynab_id, month)
     return distill.month(json)

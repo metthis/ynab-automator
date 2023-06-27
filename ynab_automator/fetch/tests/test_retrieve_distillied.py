@@ -28,6 +28,73 @@ def test_categories(budget_ynab_id):
 
 
 cases = [
+    (
+        "5f228e6f-fabe-40d7-bf67-6fc09350e241",  # All used goal types
+        None,
+        [
+            "f976f06c-53fa-4f3f-bfd5-f52cb32493df",  # NEED
+            "d132450f-62cf-4879-a094-810466c4c90a",  # TB savings balance
+            "3dc19598-d1c2-4f89-ad3c-2b8b4d86258c",  # MF savings builder
+        ],
+    ),
+    (
+        None,
+        "NEED monthly",
+        [
+            "7bc6c91b-a130-4ec3-aaca-aa72673d78a7",  # Empty
+            "6cfc508d-a311-4e0b-bacb-5a67488c059f",  # Partially full
+            "24610eb9-82ce-444e-8be1-a57feab1df6e",  # Full
+            "df83267a-7d61-4c22-8c22-2dd54f01b440",  # Overflown +0,4
+            "41d54a43-694e-42e0-b776-ca831d266a5f",  # Overflown +1
+            "df4c2bcb-7bd1-42d3-bfa0-aeef4b59cc11",  # Overflown +1,4
+        ],
+    ),
+    (
+        "5f228e6f-fabe-40d7-bf67-6fc09350e241",  # All used goal types,
+        "NEED monthly",
+        [
+            # A conflicting ynab_id and name are provided, ynab_id takes precedence:
+            "f976f06c-53fa-4f3f-bfd5-f52cb32493df",  # NEED
+            "d132450f-62cf-4879-a094-810466c4c90a",  # TB savings balance
+            "3dc19598-d1c2-4f89-ad3c-2b8b4d86258c",  # MF savings builder
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize("group_ynab_id, group_name, category_ynab_ids", cases)
+def test_categories_from_groups_without_exception(
+    group_ynab_id: str | None, group_name: str | None, category_ynab_ids: list[str]
+):
+    result = retrieve_distilled.categories_from_group(
+        budget_ynab_id="7aadfdf9-ee55-40f1-b26b-09ffc4563085",  # Belongs to "Test budget"
+        group_ynab_id=group_ynab_id,
+        group_name=group_name,
+    )
+    assert isinstance(result, list)
+    for category in result:
+        assert isinstance(category, dict)
+    assert len(result) == len(category_ynab_ids)
+    result_category_ynab_ids = [x["id"] for x in result]
+    result_category_ynab_ids.sort()
+    category_ynab_ids.sort()
+    assert result_category_ynab_ids == category_ynab_ids
+
+
+def test_categories_from_groups_with_exception():
+    with pytest.raises(TypeError) as excinfo:
+        result = retrieve_distilled.categories_from_group(
+            budget_ynab_id="7aadfdf9-ee55-40f1-b26b-09ffc4563085",  # Belongs to "Test budget"
+            group_ynab_id=None,
+            group_name=None,
+        )
+    assert (
+        "Need to supply group_name and/or group_ynab_id as str but both are None"
+        in str(excinfo.value)
+    )
+
+
+cases = [
     ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2023-05-01"),
     ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2023-06-01"),
     ("c1e0ea99-5668-483b-b01e-25b348fe3437", "2023-02-01"),
