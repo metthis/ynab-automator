@@ -50,7 +50,7 @@ cases = [
         ],
     ),
     (
-        "5f228e6f-fabe-40d7-bf67-6fc09350e241",  # All used goal types,
+        "5f228e6f-fabe-40d7-bf67-6fc09350e241",  # All used goal types
         "NEED monthly",
         [
             # A conflicting ynab_id and name are provided, ynab_id takes precedence:
