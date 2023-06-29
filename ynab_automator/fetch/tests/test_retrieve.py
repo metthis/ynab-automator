@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from ynab_automator.fetch import retrieve
+from ynab_automator.fetch import retrieve, distill, retrieve_distilled
 
 
 def test_budgets():
@@ -83,4 +83,34 @@ def test_month_category(budget_ynab_id, month, category_ynab_id):
     assert len(json["data"]["category"]) == 23
 
 
-# Remains to be tested: push_month_category
+test_budget_ynab_id = "7aadfdf9-ee55-40f1-b26b-09ffc4563085"  # Belongs to "Test budget"
+categories = retrieve_distilled.categories_from_group(
+    test_budget_ynab_id, group_name="All used goal types"
+)
+
+
+@pytest.mark.parametrize("test_budget_ynab_id", [test_budget_ynab_id])
+@pytest.mark.parametrize("test_category_ynab_id", [x["id"] for x in categories])
+def test_push_month_category(
+    test_budget_ynab_id: str,
+    test_category_ynab_id: str,
+    current_month: str,
+    new_budgeted: int,
+    data: str,
+    check_emptiness_then_teardown,
+):
+    result = retrieve.push_month_category(
+        budget_ynab_id=test_budget_ynab_id,
+        month=current_month,
+        category_ynab_id=test_category_ynab_id,
+        data=data,
+    )
+    assert isinstance(result, dict)
+    distilled = distill.month_category(result)
+    assert len(distilled) == 23
+    assert distilled["id"] == test_category_ynab_id
+    assert distilled["budgeted"] == new_budgeted
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-vsk", "test_push_month_category"])
