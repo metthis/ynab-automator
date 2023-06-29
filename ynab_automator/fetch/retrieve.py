@@ -12,15 +12,19 @@ _PATH_CATEGORIES = "/budgets/{0}/categories"
 _PATH_MONTH = "/budgets/{0}/months/{1}"
 _PATH_MONTH_CATEGORY = "/budgets/{0}/months/{1}/categories/{2}"
 
-_HEADERS = {"Authorization": f"Bearer {access_token.ACCESS_TOKEN}"}
+_HEADER_AUTH = {"Authorization": f"Bearer {access_token.ACCESS_TOKEN}"}
+_HEADER_JSON = {"Content-Type": "application/json"}
+
+_HEADERS_GET = _HEADER_AUTH
+_HEADERS_PATCH = _HEADER_AUTH | _HEADER_JSON
 
 
 def _retrieve_or_push_json(path: str, data: dict | None = None) -> dict:
     url = _BASE_URL + path
     if data is None:
-        response = requests.get(url, headers=_HEADERS)
+        response = requests.get(url, headers=_HEADERS_GET)
     else:
-        response = requests.patch(url, headers=_HEADERS, data=data)
+        response = requests.patch(url, headers=_HEADERS_PATCH, data=data)
     json = response.json()
     check_json_for_errors(json)
     return json
