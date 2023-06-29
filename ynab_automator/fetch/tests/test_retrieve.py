@@ -113,4 +113,4 @@ def test_push_month_category(
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-vsk", "test_push_month_category"])
+    pytest.main([__file__])
