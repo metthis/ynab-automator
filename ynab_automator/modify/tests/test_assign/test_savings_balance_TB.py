@@ -92,3 +92,7 @@ def test_new_month_savings_balance_TB(
         assert resulted_m_category.delta() == expected_limit
     else:
         assert resulted_m_category.delta() == data["goal_overall_left"]
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])

@@ -27,3 +27,7 @@ def test_new_month_savings_builder_MF(data: dict, m_category: MonthCategory):
     assert (
         resulted_m_category.new_budgeted == data["budgeted"] + data["goal_overall_left"]
     )
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])

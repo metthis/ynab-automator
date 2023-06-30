@@ -27,3 +27,7 @@ def test_new_month_NEED_without_overflow(data: dict, m_category: MonthCategory):
     assert (
         resulted_m_category.new_budgeted == data["budgeted"] + data["goal_under_funded"]
     )
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])
