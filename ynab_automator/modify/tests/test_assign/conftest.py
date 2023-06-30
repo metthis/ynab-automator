@@ -19,7 +19,6 @@ def m_category(request) -> MonthCategory:
         "note": "",
     }
 
-    print(request.node.funcargs)
     data: dict = DEFAULTS | request.node.funcargs["data"]
 
     yield MonthCategory(
