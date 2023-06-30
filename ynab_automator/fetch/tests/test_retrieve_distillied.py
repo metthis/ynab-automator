@@ -149,3 +149,35 @@ def test_month_category(budget_ynab_id, month, category_ynab_id):
     foo = retrieve_distilled.month_category(budget_ynab_id, month, category_ynab_id)
     assert isinstance(foo, dict)
     assert len(foo) == 23
+
+
+test_budget_ynab_id = "7aadfdf9-ee55-40f1-b26b-09ffc4563085"  # Belongs to "Test budget"
+categories = retrieve_distilled.categories_from_group(
+    test_budget_ynab_id, group_name="All used goal types"
+)
+
+
+@pytest.mark.parametrize("test_budget_ynab_id", [test_budget_ynab_id])
+@pytest.mark.parametrize("test_category_ynab_id", [x["id"] for x in categories])
+def test_push_month_category(
+    test_budget_ynab_id: str,
+    test_category_ynab_id: str,
+    current_month: str,
+    new_budgeted: int,
+    data: str,
+    check_emptiness_then_teardown,
+):
+    result = retrieve_distilled.push_month_category(
+        budget_ynab_id=test_budget_ynab_id,
+        month=current_month,
+        category_ynab_id=test_category_ynab_id,
+        data=data,
+    )
+    assert isinstance(result, dict)
+    assert len(result) == 23
+    assert result["id"] == test_category_ynab_id
+    assert result["budgeted"] == new_budgeted
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])

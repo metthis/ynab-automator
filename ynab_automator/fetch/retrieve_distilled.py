@@ -40,3 +40,10 @@ def month_categories(budget_ynab_id: str, month: str) -> List[dict]:
 def month_category(budget_ynab_id: str, month: str, category_ynab_id: str) -> dict:
     json = retrieve.month_category(budget_ynab_id, month, category_ynab_id)
     return distill.month_category(json)
+
+
+def push_month_category(
+    budget_ynab_id: str, month: str, category_ynab_id: str, data: str
+) -> dict:
+    json = retrieve.push_month_category(budget_ynab_id, month, category_ynab_id, data)
+    return distill.month_category(json)
