@@ -31,7 +31,9 @@ def m_category(request) -> MonthCategory:
     )
 
 
-# All of the following is used only by test_NEED_with_overflow.py:
+# All of the following is used only by:
+#  - test_NEED_with_overflow.py
+#  - test_overflow_loop.py
 
 
 def _data_func(new_budgeted):
