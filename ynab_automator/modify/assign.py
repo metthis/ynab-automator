@@ -56,13 +56,11 @@ def new_month_NEED_with_overflow(m_category: MonthCategory) -> list[MonthCategor
 
 def overflow_loop(m_category: MonthCategory, left_to_add: int) -> list[MonthCategory]:
     updated_m_categories = []
-    overflow_cycle = 0
+    cycle = 0
     while left_to_add > 0:
-        left_to_add, updated_m_category = overflow_cycle(
-            m_category, overflow_cycle, left_to_add
-        )
+        left_to_add, updated_m_category = overflow_cycle(m_category, cycle, left_to_add)
         updated_m_categories.append(updated_m_category)
-        overflow_cycle += 1
+        cycle += 1
 
     return updated_m_categories
 
@@ -90,10 +88,7 @@ def overflow_cycle(
     else:
         raise ValueError(f"overflow_cycle is {overflow_cycle}, should be 0 or larger")
 
-    if left_to_add > month_celing:
-        to_add_this_month = month_celing
-    else:
-        to_add_this_month = left_to_add
+    to_add_this_month = min(left_to_add, month_celing)
 
     if m_category.old_budgeted is None:
         raise ValueError("Expected old_budgeted to be int but is None.")
