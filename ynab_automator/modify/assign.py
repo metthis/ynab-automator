@@ -16,29 +16,38 @@ def get_updated_m_categories(
         category_config = prepare.get_matching_category_config(
             categories_config, m_category
         )
-        sequence_of_updated_m_categories = m_category_dispatcher(
-            m_category, category_config
-        )
+        appropriate_update_function = assigning_dispatcher(m_category, category_config)
+        sequence_of_updated_m_categories = appropriate_update_function(m_category)
         all_updated_m_categories.extend(sequence_of_updated_m_categories)
 
     return all_updated_m_categories
 
 
-def m_category_dispatcher(
+def assigning_dispatcher(
     m_category: MonthCategory, category_config: Category
 ) -> tuple[MonthCategory]:
     goal_type = m_category.data["goal_type"]
-    if goal_type == "NEED":
-        if category_config.overflow:
-            return new_month_NEED_with_overflow(m_category)
-        else:
-            return new_month_NEED_without_overflow(m_category)
-    elif goal_type == "MF":
-        return new_month_savings_builder_MF(m_category)
-    elif goal_type == "TB":
-        return new_month_savings_balance_TB(m_category)
-    else:
-        raise ValueError(f"Unexpected goal_type: {m_category.data['goal_type']}")
+    overflow = category_config.overflow
+
+    if overflow not in (0, 1, None):
+        raise ValueError(f"Category.overflow should be 0, 1 or None but is: {overflow}")
+
+    match goal_type, overflow:
+        case "NEED", 1:
+            return new_month_NEED_with_overflow
+        case "NEED", _:
+            return new_month_NEED_without_overflow
+        case "MF", _:
+            return new_month_savings_builder_MF
+        case "TB", _:
+            return new_month_savings_balance_TB
+        case _:
+            if isinstance(goal_type, str):
+                raise ValueError(f"Unexpected goal_type: {goal_type}")
+            else:
+                raise TypeError(
+                    f"goal_type should be str but is: {type(goal_type).__name__}"
+                )
 
 
 def new_month_NEED_without_overflow(

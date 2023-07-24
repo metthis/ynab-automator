@@ -22,7 +22,12 @@ def m_category(request) -> MonthCategory:
         "note": "",
     }
 
-    data: dict = DEFAULTS | request.node.funcargs["data"]
+    try:
+        override = request.node.funcargs["data"]
+    except KeyError:
+        override = {}
+
+    data: dict = DEFAULTS | override
 
     yield MonthCategory(
         data=data,
