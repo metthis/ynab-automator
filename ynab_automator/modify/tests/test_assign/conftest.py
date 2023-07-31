@@ -9,8 +9,10 @@ from ynab_automator.fetch import retrieve_distilled, months
 from ynab_automator.fetch.months import get_current_month
 
 
-@pytest.fixture
-def m_category(request) -> MonthCategory:
+def m_category_func(override: dict = None) -> MonthCategory:
+    if override is None:
+        override = {}
+
     DEFAULTS = {
         "id": "ynab_id",
         "name": "name",
@@ -22,26 +24,42 @@ def m_category(request) -> MonthCategory:
         "note": "",
     }
 
-    try:
-        override = request.node.funcargs["data"]
-    except KeyError:
-        override = {}
-
     data: dict = DEFAULTS | override
 
-    yield MonthCategory(
+    return MonthCategory(
         data=data,
         budget_ynab_id="budget_ynab_id",
         month=get_current_month(),
     )
 
 
+@pytest.fixture
+def m_category(request) -> MonthCategory:
+    try:
+        override = request.node.funcargs["data"]
+    except KeyError:
+        override = {}
+
+    yield m_category_func(override)
+
+
+@pytest.fixture
+def m_categories(request) -> list[MonthCategory]:
+    try:
+        overrides = request.node.funcargs["data"]
+    except KeyError:
+        overrides = ({},)
+
+    yield [m_category_func(x) for x in overrides]
+
+
 # All of the following is used only by:
 #  - test_NEED_with_overflow.py
 #  - test_overflow_loop.py
+#  - test_get_updated_m_categories.py
 
 
-def _data_func(new_budgeted):
+def _data_func(new_budgeted) -> str:
     # Same code as in MonthCategory.update_data:
     python_object = {"category": {"budgeted": new_budgeted}}
     serialised = json.dumps(python_object)
@@ -50,7 +68,7 @@ def _data_func(new_budgeted):
 
 def reset_cycle(
     budget_ynab_id: str, month: str, category_ynab_id: str, new_budgeted: int
-):
+) -> dict:
     result = retrieve_distilled.push_month_category(
         budget_ynab_id=budget_ynab_id,
         month=month,
@@ -66,16 +84,21 @@ def reset_cycle(
 # reset functions reset live categories to an initial state expected by a test:
 
 
-def reset_empty(budget_ynab_id: str, first_month: str, category_ynab_id: str):
+def reset_empty(
+    budget_ynab_id: str, first_month: str, category_ynab_id: str
+) -> tuple[dict]:
     result = reset_cycle(
         new_budgeted=0,
         budget_ynab_id=budget_ynab_id,
         month=first_month,
         category_ynab_id=category_ynab_id,
     )
+    return (result,)
 
 
-def reset_partially_full(budget_ynab_id: str, first_month: str, category_ynab_id: str):
+def reset_partially_full(
+    budget_ynab_id: str, first_month: str, category_ynab_id: str
+) -> tuple[dict]:
     result = reset_cycle(
         new_budgeted=4_000,
         budget_ynab_id=budget_ynab_id,
@@ -83,9 +106,12 @@ def reset_partially_full(budget_ynab_id: str, first_month: str, category_ynab_id
         category_ynab_id=category_ynab_id,
     )
     assert result["budgeted"] == 0.4 * result["goal_target"]
+    return (result,)
 
 
-def reset_full(budget_ynab_id: str, first_month: str, category_ynab_id: str):
+def reset_full(
+    budget_ynab_id: str, first_month: str, category_ynab_id: str
+) -> tuple[dict]:
     result = reset_cycle(
         new_budgeted=10_000,
         budget_ynab_id=budget_ynab_id,
@@ -93,11 +119,12 @@ def reset_full(budget_ynab_id: str, first_month: str, category_ynab_id: str):
         category_ynab_id=category_ynab_id,
     )
     assert result["budgeted"] == result["goal_target"]
+    return (result,)
 
 
 def reset_overflown_partially(
     budget_ynab_id: str, first_month: str, category_ynab_id: str
-):
+) -> tuple[dict, dict]:
     result_1 = reset_cycle(
         new_budgeted=10_000,
         budget_ynab_id=budget_ynab_id,
@@ -112,9 +139,12 @@ def reset_overflown_partially(
     )
     assert result_1["budgeted"] == result_1["goal_target"]
     assert result_2["budgeted"] == 0.4 * result_2["goal_target"]
+    return result_1, result_2
 
 
-def reset_overflown_fully(budget_ynab_id: str, first_month: str, category_ynab_id: str):
+def reset_overflown_fully(
+    budget_ynab_id: str, first_month: str, category_ynab_id: str
+) -> tuple[dict, dict]:
     result_1 = reset_cycle(
         new_budgeted=10_000,
         budget_ynab_id=budget_ynab_id,
@@ -129,11 +159,12 @@ def reset_overflown_fully(budget_ynab_id: str, first_month: str, category_ynab_i
     )
     assert result_1["budgeted"] == result_1["goal_target"]
     assert result_2["budgeted"] == result_2["goal_target"]
+    return result_1, result_2
 
 
 def reset_overflown_fully_plus_partially(
     budget_ynab_id: str, first_month: str, category_ynab_id: str
-):
+) -> tuple[dict, dict, dict]:
     result_1 = reset_cycle(
         new_budgeted=10_000,
         budget_ynab_id=budget_ynab_id,
@@ -155,24 +186,27 @@ def reset_overflown_fully_plus_partially(
     assert result_1["budgeted"] == result_1["goal_target"]
     assert result_2["budgeted"] == result_2["goal_target"]
     assert result_3["budgeted"] == 0.4 * result_3["goal_target"]
+    return result_1, result_2, result_3
 
 
 def reset(
     budget_ynab_id: str, first_month: str, category_ynab_id: str, mode: ResetMode
-):
+) -> tuple[dict] | tuple[dict, dict] | tuple[dict, dict, dict]:
     match mode:
         case ResetMode.EMPTY:
-            reset_empty(budget_ynab_id, first_month, category_ynab_id)
+            return reset_empty(budget_ynab_id, first_month, category_ynab_id)
         case ResetMode.PARTIALLY_FULL:
-            reset_partially_full(budget_ynab_id, first_month, category_ynab_id)
+            return reset_partially_full(budget_ynab_id, first_month, category_ynab_id)
         case ResetMode.FULL:
-            reset_full(budget_ynab_id, first_month, category_ynab_id)
+            return reset_full(budget_ynab_id, first_month, category_ynab_id)
         case ResetMode.OVERFLOWN_PARTIALLY:
-            reset_overflown_partially(budget_ynab_id, first_month, category_ynab_id)
+            return reset_overflown_partially(
+                budget_ynab_id, first_month, category_ynab_id
+            )
         case ResetMode.OVERFLOWN_FULLY:
-            reset_overflown_fully(budget_ynab_id, first_month, category_ynab_id)
+            return reset_overflown_fully(budget_ynab_id, first_month, category_ynab_id)
         case ResetMode.OVERFLOWN_FULLY_PLUS_PARTIALLY:
-            reset_overflown_fully_plus_partially(
+            return reset_overflown_fully_plus_partially(
                 budget_ynab_id, first_month, category_ynab_id
             )
         case _:
@@ -181,13 +215,9 @@ def reset(
             )
 
 
-@pytest.fixture
-def reset_before(request):
-    mode = request.node.funcargs["mode"]
-    budget_ynab_id = request.node.funcargs["budget_ynab_id"]
-    first_month = request.node.funcargs["first_month"]
-    category_ynab_id = request.node.funcargs["category_ynab_id"]
-
+def reset_before_func(
+    mode, budget_ynab_id, first_month, category_ynab_id
+) -> tuple[dict] | tuple[dict, dict] | tuple[dict, dict, dict]:
     parametrised_reset = lambda: reset(
         mode=mode,
         budget_ynab_id=budget_ynab_id,
@@ -195,5 +225,54 @@ def reset_before(request):
         category_ynab_id=category_ynab_id,
     )
 
-    parametrised_reset()
-    yield
+    return parametrised_reset()
+
+
+def get_mode_budget_ynab_id_and_first_month_from_request(
+    request,
+) -> tuple[ResetMode, str, str]:
+    mode = request.node.funcargs["mode"]
+    budget_ynab_id = request.node.funcargs["budget_ynab_id"]
+    first_month = request.node.funcargs["first_month"]
+
+    return mode, budget_ynab_id, first_month
+
+
+@pytest.fixture
+def reset_before(request) -> tuple[dict] | tuple[dict, dict] | tuple[dict, dict, dict]:
+    (
+        mode,
+        budget_ynab_id,
+        first_month,
+    ) = get_mode_budget_ynab_id_and_first_month_from_request(request)
+    category_ynab_id = request.node.funcargs["category_ynab_id"]
+    yield reset_before_func(mode, budget_ynab_id, first_month, category_ynab_id)
+
+
+@pytest.fixture
+def reset_before_all(request) -> list[dict]:
+    (
+        mode,
+        budget_ynab_id,
+        first_month,
+    ) = get_mode_budget_ynab_id_and_first_month_from_request(request)
+    category_ynab_ids = request.node.funcargs["category_ynab_ids"]
+
+    all_data = []
+    for category_ynab_id in category_ynab_ids:
+        set_of_data = reset_before_func(
+            mode, budget_ynab_id, first_month, category_ynab_id
+        )
+        all_data.append(*set_of_data)
+    yield all_data
+
+
+@pytest.fixture
+def reset_before_all_and_init_m_categories(
+    reset_before_all, request
+) -> list[MonthCategory]:
+    all_data = reset_before_all
+    _, budget_ynab_id, month = get_mode_budget_ynab_id_and_first_month_from_request(
+        request
+    )
+    yield [MonthCategory(data, budget_ynab_id, month) for data in all_data]
