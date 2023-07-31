@@ -97,7 +97,7 @@ def test_push_month_category(
     current_month: str,
     new_budgeted: int,
     data: str,
-    check_emptiness_then_teardown,
+    empty_before: None,
 ):
     result = retrieve.push_month_category(
         budget_ynab_id=test_budget_ynab_id,

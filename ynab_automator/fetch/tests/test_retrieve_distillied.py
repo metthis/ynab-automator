@@ -32,7 +32,8 @@ cases = [
         "5f228e6f-fabe-40d7-bf67-6fc09350e241",  # All used goal types
         None,
         [
-            "f976f06c-53fa-4f3f-bfd5-f52cb32493df",  # NEED
+            "f976f06c-53fa-4f3f-bfd5-f52cb32493df",  # NEED with overflow
+            "01b96637-34a8-4394-8b94-e6a3fa7ef0ab",  # NEED without overflow
             "d132450f-62cf-4879-a094-810466c4c90a",  # TB savings balance
             "3dc19598-d1c2-4f89-ad3c-2b8b4d86258c",  # MF savings builder
         ],
@@ -54,7 +55,8 @@ cases = [
         "NEED monthly",
         [
             # A conflicting ynab_id and name are provided, ynab_id takes precedence:
-            "f976f06c-53fa-4f3f-bfd5-f52cb32493df",  # NEED
+            "f976f06c-53fa-4f3f-bfd5-f52cb32493df",  # NEED with overflow
+            "01b96637-34a8-4394-8b94-e6a3fa7ef0ab",  # NEED without overflow
             "d132450f-62cf-4879-a094-810466c4c90a",  # TB savings balance
             "3dc19598-d1c2-4f89-ad3c-2b8b4d86258c",  # MF savings builder
         ],
@@ -165,7 +167,7 @@ def test_push_month_category(
     current_month: str,
     new_budgeted: int,
     data: str,
-    check_emptiness_then_teardown,
+    empty_before: None,
 ):
     result = retrieve_distilled.push_month_category(
         budget_ynab_id=test_budget_ynab_id,

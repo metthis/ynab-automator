@@ -47,20 +47,10 @@ def push(budget_ynab_id: str, month: str, category_ynab_id: str, data: str):
 
 
 @pytest.fixture
-def check_emptiness_then_teardown(request):
+def empty_before(request):
     test_budget_ynab_id = request.node.funcargs["test_budget_ynab_id"]
     current_month = request.node.funcargs["current_month"]
     test_category_ynab_id = request.node.funcargs["test_category_ynab_id"]
-
-    result = retrieve_distilled.month_category(
-        budget_ynab_id=test_budget_ynab_id,
-        month=current_month,
-        category_ynab_id=test_category_ynab_id,
-    )
-    assert result["budgeted"] == 0
-    assert result["id"] == test_category_ynab_id
-
-    yield
 
     result = push(
         budget_ynab_id=test_budget_ynab_id,
@@ -71,3 +61,4 @@ def check_emptiness_then_teardown(request):
     distilled = distill.month_category(result)
     assert distilled["budgeted"] == 0
     assert distilled["id"] == test_category_ynab_id
+    yield
